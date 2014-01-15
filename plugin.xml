@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+    xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="magnetix.uitestplugin"
+    version="3.0.0">
+
+    <name>UITestPlugin</name>
+    <description>Test UI</description>
+    
+    <author>CNL</author>
+    <keywords>test,ui</keywords>
+    <license>MIT License</license>
+
+    <engines>
+      <engine name="cordova" version=">=3.0.0" />
+    </engines>
+	
+	<js-module src="www/uitestplugin.js" name="UITestPlugin">
+		<clobbers target="plugin.uitestplugin" />
+	</js-module>
+	
+    <!-- android -->
+    <platform name="android">
+        
+
+        <!-- Cordova >= 3.0.0 -->
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="UITestPlugin">   
+				<param name="android-package" value="magnetix.uitestplugin.UITestPlugin"/>
+			</feature>
+        </config-file>
+
+        <!-- cordova plugin src files -->
+        <source-file src="src/android/UITestPlugin.java" target-dir="src/magnetix/uitestplugin" />
+    </platform>
+</plugin>
