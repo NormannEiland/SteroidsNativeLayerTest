@@ -62,16 +62,20 @@ public class UITestPlugin extends CordovaPlugin {
 		Activity ctx = cordova.getActivity();
 		
 		List<String> classNames = new ArrayList<String>();
+		List<View> views = new ArrayList<View>();
 		
 		View v = ctx.getCurrentFocus();
+		views.add(v);
 		Class<? extends View> vc = v.getClass();
 		String vcn = vc.getName();
 		classNames.add(vcn);
 		
 		View currentView = v;
 		try	{
+			//while (!classNames.get(classNames.size() - 1).startsWith("com.android.internal")) {
 			while (true) {
 				currentView = (View) currentView.getParent();
+				views.add(currentView);
 				Class<? extends View> viewClass = currentView.getClass();
 				classNames.add(viewClass.getName());
 			}
@@ -102,25 +106,67 @@ public class UITestPlugin extends CordovaPlugin {
 		//v.setBackgroundColor(Color.RED);
 		//vp.setLayoutParams(new LinearLayout.LayoutParams(300, 300));
 		
-//RelativeLayout lContainerLayout = new RelativeLayout(ctx);
-//lContainerLayout.setBackgroundColor(Color.YELLOW);
+		RelativeLayout lContainerLayout = new RelativeLayout(ctx);
+		lContainerLayout.setBackgroundColor(Color.YELLOW);
 		
-//lContainerLayout.setLayoutParams(new RelativeLayout.LayoutParams( LayoutParams.MATCH_PARENT , LayoutParams.MATCH_PARENT ));
+		lContainerLayout.setLayoutParams(new RelativeLayout.LayoutParams( LayoutParams.MATCH_PARENT , LayoutParams.MATCH_PARENT ));
 
 		// Custom view
-//Button mCustomView = new Button(ctx);
-//mCustomView.setText("Test4");
-//LayoutParams lButtonParams = new RelativeLayout.LayoutParams( LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT);
-//((android.widget.RelativeLayout.LayoutParams) lButtonParams).addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-//mCustomView.setLayoutParams(lButtonParams);
-//lContainerLayout.addView(mCustomView);
+		Button mCustomView = new Button(ctx);
+		mCustomView.setText("Test4");
+		LayoutParams lButtonParams = new RelativeLayout.LayoutParams( LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT);
+		((android.widget.RelativeLayout.LayoutParams) lButtonParams).addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		mCustomView.setLayoutParams(lButtonParams);
+		lContainerLayout.addView(mCustomView);
 
-		// Adding full screen container
 		
+		View outerAppgyver = null;
+		View outerRelative = null;
+		Boolean appGyverFound = false;
+		Boolean relativeFound = false;
+		for(Iterator<View> i = views.iterator(); i.hasNext(); ) {
+		    View vi = i.next();
+		    if (appGyverFound) {
+		    	if (vi.getClass().getName().contains("RelativeLayout")) {
+		    	//if (vi.getClass().getName().contains("Frame")) {
+		    		relativeFound = true;
+		    		outerRelative = vi;
+		    	}
+		    }	
+		    if (vi.getClass().getName().contains("appgyver")) {
+		    //if (vi.getClass().getName().contains("Keyboard")) {	
+		    	appGyverFound = true;
+		    	outerAppgyver = vi;
+		    }	
+		}
+		
+		if (relativeFound && outerRelative != null) {
+			((RelativeLayout)outerRelative).addView(lContainerLayout, 0);
+			//((FrameLayout)outerRelative).addView(lContainerLayout, 0);
+		}
+		if (appGyverFound && outerAppgyver != null) {
+			outerAppgyver.animate().x((float)500).y((float)500);
+		}
+		
+		// Adding full screen container
 		//ctx.addContentView(lContainerLayout, new LayoutParams( LayoutParams.MATCH_PARENT , LayoutParams.MATCH_PARENT ));
 		
+		List<String> newClassNames = new ArrayList<String>();
+		Class<? extends View> newVc = lContainerLayout.getClass();
+		String newVcn = newVc.getName();
+		newClassNames.add(newVcn);
 		
-//vpp.addView(lContainerLayout, 0);
+		View newCurrentView = lContainerLayout;
+		try	{
+			//while (!classNames.get(classNames.size() - 1).startsWith("com.android.internal")) {
+			while (true) {
+				newCurrentView = (View) newCurrentView.getParent();
+				Class<? extends View> newViewClass = newCurrentView.getClass();
+				newClassNames.add(newViewClass.getName());
+			}
+		} catch (Exception err) {
+			// Went beyond view stack
+		}
 		
 		
 		//vp.bringToFront();
@@ -135,6 +181,12 @@ public class UITestPlugin extends CordovaPlugin {
 		for(Iterator<String> i = classNames.iterator(); i.hasNext(); ) {
 		    String className = i.next();
 		    layouts += className + "\r\n";
+		}
+		
+		layouts += "\r\n\r\n";
+		for(Iterator<String> i = newClassNames.iterator(); i.hasNext(); ) {
+		    String newClassName = i.next();
+		    layouts += newClassName + "\r\n";
 		}
 		
 		callbackContext.success(layouts); // Thread-safe.
