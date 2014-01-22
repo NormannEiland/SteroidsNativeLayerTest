@@ -1,5 +1,9 @@
 package magnetix.uitestplugin;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -56,10 +60,30 @@ public class UITestPlugin extends CordovaPlugin {
 	
 	private void open(String message, CallbackContext callbackContext) {
 		Activity ctx = cordova.getActivity();
+		
+		List<String> classNames = new ArrayList<String>();
+		
 		View v = ctx.getCurrentFocus();
-		vp = (LinearLayout)v.getParent();
-		FrameLayout vpp = (FrameLayout)vp.getParent();
-		vp.animate().x((float)500).y((float)500);
+		Class<? extends View> vc = v.getClass();
+		String vcn = vc.getName();
+		classNames.add(vcn);
+		
+		View currentView = v;
+		try	{
+			while (!classNames.get(classNames.size() - 1).startsWith("com.android.internal")) {
+				currentView = (View) currentView.getParent();
+				Class<? extends View> viewClass = currentView.getClass();
+				classNames.add(viewClass.getName());
+			}
+		} catch (Exception err) {
+			// Went beyond view stack
+		}
+		
+//vp = (LinearLayout)v.getParent();
+//FrameLayout vpp = (FrameLayout)vp.getParent();
+//vp.animate().x((float)500).y((float)500);
+		
+		
 		//ScaleAnimation animation = new ScaleAnimation(Animation.RELATIVE_TO_SELF, (float)0.2, Animation.RELATIVE_TO_SELF, (float)0.2);
 		//vp.startAnimation(animation);
 		
@@ -78,27 +102,42 @@ public class UITestPlugin extends CordovaPlugin {
 		//v.setBackgroundColor(Color.RED);
 		//vp.setLayoutParams(new LinearLayout.LayoutParams(300, 300));
 		
-		RelativeLayout lContainerLayout = new RelativeLayout(ctx);
-		lContainerLayout.setBackgroundColor(Color.YELLOW);
+//RelativeLayout lContainerLayout = new RelativeLayout(ctx);
+//lContainerLayout.setBackgroundColor(Color.YELLOW);
 		
-		lContainerLayout.setLayoutParams(new RelativeLayout.LayoutParams( LayoutParams.MATCH_PARENT , LayoutParams.MATCH_PARENT ));
+//lContainerLayout.setLayoutParams(new RelativeLayout.LayoutParams( LayoutParams.MATCH_PARENT , LayoutParams.MATCH_PARENT ));
 
 		// Custom view
-		Button mCustomView = new Button(ctx);
-		mCustomView.setText("Test4");
-		LayoutParams lButtonParams = new RelativeLayout.LayoutParams( LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT);
-		((android.widget.RelativeLayout.LayoutParams) lButtonParams).addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		mCustomView.setLayoutParams(lButtonParams);
-		lContainerLayout.addView(mCustomView);
+//Button mCustomView = new Button(ctx);
+//mCustomView.setText("Test4");
+//LayoutParams lButtonParams = new RelativeLayout.LayoutParams( LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT);
+//((android.widget.RelativeLayout.LayoutParams) lButtonParams).addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+//mCustomView.setLayoutParams(lButtonParams);
+//lContainerLayout.addView(mCustomView);
 
 		// Adding full screen container
 		
 		//ctx.addContentView(lContainerLayout, new LayoutParams( LayoutParams.MATCH_PARENT , LayoutParams.MATCH_PARENT ));
-		vpp.addView(lContainerLayout, 0);
+		
+		
+//vpp.addView(lContainerLayout, 0);
+		
+		
 		//vp.bringToFront();
-		ViewParent v_p = lContainerLayout.getParent();
+		
+		
+//ViewParent v_p = lContainerLayout.getParent();
+		
+		
 		//lContainerLayout.bringToFront();
-		callbackContext.success(message); // Thread-safe.
+		
+		String layouts = "";
+		for(Iterator<String> i = classNames.iterator(); i.hasNext(); ) {
+		    String className = i.next();
+		    layouts += className + "\r\n";
+		}
+		
+		callbackContext.success(layouts); // Thread-safe.
 	}
 	
 	LinearLayout vp;
