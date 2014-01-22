@@ -70,7 +70,7 @@ public class UITestPlugin extends CordovaPlugin {
 		
 		View currentView = v;
 		try	{
-			while (!classNames.get(classNames.size() - 1).startsWith("com.android.internal")) {
+			while (true) {
 				currentView = (View) currentView.getParent();
 				Class<? extends View> viewClass = currentView.getClass();
 				classNames.add(viewClass.getName());
