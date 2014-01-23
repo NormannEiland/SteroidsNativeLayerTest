@@ -121,16 +121,20 @@ public class UITestPlugin extends CordovaPlugin {
 
 		
 		View outerAppgyver = null;
-		View outerRelative = null;
+		View firstOuterFrame = null;
+		View lastOuterFrame = null;
 		Boolean appGyverFound = false;
-		Boolean relativeFound = false;
+		Boolean frameFound = false;
 		for(Iterator<View> i = views.iterator(); i.hasNext(); ) {
 		    View vi = i.next();
 		    if (appGyverFound) {
-		    	if (!relativeFound && vi.getClass().getName().contains("Frame")) {
+		    	if (vi.getClass().getName().contains(".FrameLayout")) {
 		    	//if (vi.getClass().getName().contains("Frame")) {
-		    		relativeFound = true;
-		    		outerRelative = vi;
+		    		if (!frameFound) {
+		    			firstOuterFrame = vi;
+		    		}
+		    		frameFound = true;
+		    		lastOuterFrame = vi;
 		    	}
 		    }	
 		    if (vi.getClass().getName().contains("appgyver")) {
@@ -140,12 +144,12 @@ public class UITestPlugin extends CordovaPlugin {
 		    }	
 		}
 		
-		if (relativeFound && outerRelative != null) {
+		if (frameFound && lastOuterFrame != null) {
 			//((RelativeLayout)outerRelative).addView(lContainerLayout, 0);
-			((FrameLayout)outerRelative).addView(lContainerLayout, 0);
+			((FrameLayout)lastOuterFrame).addView(lContainerLayout, 0);
 		}
 		if (appGyverFound && outerAppgyver != null) {
-			outerAppgyver.animate().x((float)500).y((float)500);
+			firstOuterFrame.animate().x((float)500).y((float)500);
 		}
 		
 		// Adding full screen container
