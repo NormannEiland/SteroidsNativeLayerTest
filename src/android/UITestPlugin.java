@@ -127,7 +127,7 @@ public class UITestPlugin extends CordovaPlugin {
 		for(Iterator<View> i = views.iterator(); i.hasNext(); ) {
 		    View vi = i.next();
 		    if (appGyverFound) {
-		    	if (vi.getClass().getName().contains("RelativeLayout")) {
+		    	if (!relativeFound && vi.getClass().getName().contains("Frame")) {
 		    	//if (vi.getClass().getName().contains("Frame")) {
 		    		relativeFound = true;
 		    		outerRelative = vi;
