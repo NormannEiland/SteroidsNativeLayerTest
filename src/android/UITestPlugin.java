@@ -141,8 +141,8 @@ public class UITestPlugin extends CordovaPlugin {
 		}
 		
 		if (relativeFound && outerRelative != null) {
-			((RelativeLayout)outerRelative).addView(lContainerLayout, 0);
-			//((FrameLayout)outerRelative).addView(lContainerLayout, 0);
+			//((RelativeLayout)outerRelative).addView(lContainerLayout, 0);
+			((FrameLayout)outerRelative).addView(lContainerLayout, 0);
 		}
 		if (appGyverFound && outerAppgyver != null) {
 			outerAppgyver.animate().x((float)500).y((float)500);
